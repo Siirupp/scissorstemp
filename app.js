@@ -21,13 +21,17 @@ app.get('/', function (req, res) {
 var currentConnections = {}
 
 io.sockets.on('connection', function(client){
-    console.log('a user connected')
-    io.emit('clientConnected', client.id)
+    console.log(client.id + ' connected')
 
     currentConnections[client.id] = {socket: client}
     currentConnections[client.id].pos = {}
     currentConnections[client.id].pos['x'] = 5
     currentConnections[client.id].pos['y'] = 5
+
+    for (id in currentConnections){
+        let cl = currentConnections[id]
+        io.emit('clientConnected', id, cl.pos)
+    }
 
     client.on('move', function(direction){
         switch(direction){
@@ -52,6 +56,7 @@ io.sockets.on('connection', function(client){
     client.on('disconnect', function(){
         console.log('user disconnected');
         delete currentConnections[client.id]
+        io.emit('clientDisconnected', client.id)
     })
 })
 

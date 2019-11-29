@@ -5,17 +5,20 @@ $(function () {
     var socket = io()
     var scratchcatsrc = 'img/scratch-cat.png'
     var character = new Image()
-
     character.src = scratchcatsrc
 
-    currentConnections = []
+    var currentConnections = []
 
-    socket.on('clientConnected', function(clientid){
+    socket.on('clientConnected', function(clientid, pos){
         console.log(clientid + " connected")
         currentConnections[clientid] = {}
-        currentConnections[clientid].pos = {}
-        currentConnections[clientid].pos['x'] = 5
-        currentConnections[clientid].pos['y'] = 5
+        currentConnections[clientid].pos = pos
+        reloadPos(currentConnections)
+    })
+
+    socket.on('clientDisconnected', function(clientid){
+        delete currentConnections[clientid]
+        reloadPos(currentConnections)
     })
 
     socket.on('position', function(clientid, pos) {
@@ -24,10 +27,9 @@ $(function () {
     })
 
     function reloadPos(currentConnections){
+        ctx.clearRect(0, 0, c.width, c.height)
         for (client in currentConnections){
-            console.log(client)
             let cl = currentConnections[client]
-            ctx.clearRect(0, 0, c.width, c.height)
             ctx.drawImage(character, cl.pos['x']*5, -cl.pos['y']*5, 150, 150)
         }
     }
