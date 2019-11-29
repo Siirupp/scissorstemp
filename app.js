@@ -1,0 +1,60 @@
+// Jimi Toiviainen
+
+var express = require('express')
+var app = express()
+var bodyParser = require('body-parser')
+
+app.use(express.static('public'))
+// support parsing of application/json type post data
+app.use(bodyParser.json())
+//support parsing of application/x-www-form-urlencoded post data
+app.use(bodyParser.urlencoded({ extended: true }))
+
+var http = require('http').Server(app)
+var port = process.env.PORT || 3030
+var io = require ('socket.io')(http)
+
+app.get('/', function (req, res) {
+    res.sendFile(__dirname + '/index.html')
+})
+
+var currentConnections = {}
+
+io.sockets.on('connection', function(client){
+    console.log('a user connected')
+    io.emit('clientConnected', client.id)
+
+    currentConnections[client.id] = {socket: client}
+    currentConnections[client.id].pos = {}
+    currentConnections[client.id].pos['x'] = 5
+    currentConnections[client.id].pos['y'] = 5
+
+    client.on('move', function(direction){
+        switch(direction){
+            case 'up':
+                currentConnections[client.id].pos['y'] += 1
+                break
+            case 'down':
+                currentConnections[client.id].pos['y'] -= 1
+                break
+            case 'left':
+                currentConnections[client.id].pos['x'] -= 1
+                break
+            case 'right':
+                currentConnections[client.id].pos['x'] += 1
+                break
+            default:
+                break
+        }
+        io.emit('position', client.id, currentConnections[client.id].pos)
+    })
+
+    client.on('disconnect', function(){
+        console.log('user disconnected');
+        delete currentConnections[client.id]
+    })
+})
+
+http.listen(port, function () {
+    console.log('listening on *:' + port)
+})
