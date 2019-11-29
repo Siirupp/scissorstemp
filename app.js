@@ -19,6 +19,7 @@ app.get('/', function (req, res) {
 })
 
 var currentConnections = {}
+var clientIndex = 0
 
 io.sockets.on('connection', function(client){
     console.log(client.id + ' connected')
@@ -27,10 +28,13 @@ io.sockets.on('connection', function(client){
     currentConnections[client.id].pos = {}
     currentConnections[client.id].pos['x'] = 5
     currentConnections[client.id].pos['y'] = 5
+    currentConnections[client.id].data = {}
+    currentConnections[client.id].data.hostname = "Unknown_" + clientIndex++
+    currentConnections[client.id].data.clientid = client.id
 
     for (id in currentConnections){
         let cl = currentConnections[id]
-        io.emit('clientConnected', id, cl.pos)
+        io.emit('clientConnected', id, cl.pos, cl.data)
     }
 
     client.on('move', function(direction){
@@ -51,6 +55,14 @@ io.sockets.on('connection', function(client){
                 break
         }
         io.emit('position', client.id, currentConnections[client.id].pos)
+    })
+
+    client.on('setdata', function(data){
+        for(key in data){
+            currentConnections[client.id].data[key] = data[key]
+        }
+        let cl = currentConnections[client.id]
+        io.emit('clientConnected', id, cl.pos, cl.data)
     })
 
     client.on('disconnect', function(){

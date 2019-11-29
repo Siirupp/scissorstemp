@@ -16,12 +16,27 @@
 </head>
 
 <body>
-	<h1>Moro täsmä oon</h1>
-	<p id="data">default data</p>
-	<canvas id="myCanvas" width="500" height="500" style="border:1px solid #d3d3d3;">
-	Your browser does not support the HTML5 canvas tag.</canvas>
+	<nav class="navbar navbar-default">
+		<h1 class="navbar-brand" href="#">Moro täsmä oon</h1>
+	</nav>
+	<div class="container">
+		<div class="row" style="margin-top: 20px;">
+				<div class="col-md-6">
+					<canvas id="myCanvas" width="500" height="500" style="border:1px solid #d3d3d3;">
+					Your browser does not support the HTML5 canvas tag.</canvas>
+				</div>	
+			<div class="col-md-6">
+				<ul class="nav nav-tabs">
+					<li><a class="add-contact" style="visibility: hidden;" data-toggle="tab">+ Add Contact</a></li>
+				</ul>
+				<div class="tab-content">
+				</div>
+			</div>
+		</div>
+	</div>
     <script src="js/socket.io.slim.js"></script>
-    <script src="js/socketioclient.js"></script>
+	<script src="js/socketioclient.js"></script>
+	<script src="js/tabLogic.js"></script>
 </body>
 
 </html>

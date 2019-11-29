@@ -6,17 +6,24 @@ $(function () {
     var scratchcatsrc = 'img/scratch-cat.png'
     var character = new Image()
     character.src = scratchcatsrc
+    
+    ctx.fillStyle = "black";
+    ctx.font = "bold 16px Arial";
 
     var currentConnections = []
 
-    socket.on('clientConnected', function(clientid, pos){
+    socket.on('clientConnected', function(clientid, pos, data){
         console.log(clientid + " connected")
         currentConnections[clientid] = {}
         currentConnections[clientid].pos = pos
+        currentConnections[clientid].data = data
+        $('.add-contact').trigger("click", data)
         reloadPos(currentConnections)
     })
 
     socket.on('clientDisconnected', function(clientid){
+        console.log("Client disconnected")
+        removeTab(clientid)
         delete currentConnections[clientid]
         reloadPos(currentConnections)
     })
@@ -31,6 +38,7 @@ $(function () {
         for (client in currentConnections){
             let cl = currentConnections[client]
             ctx.drawImage(character, cl.pos['x']*5, -cl.pos['y']*5, 150, 150)
+            ctx.fillText(cl.data.hostname, cl.pos['x']*5+ 30 - (cl.data.hostname.length - 6)*5, -cl.pos['y']*5 - 5, 150, 150)
         }
     }
 
