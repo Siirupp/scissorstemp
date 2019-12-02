@@ -28,6 +28,8 @@ io.sockets.on('connection', function(client){
     currentConnections[client.id].pos = {}
     currentConnections[client.id].pos['x'] = 5
     currentConnections[client.id].pos['y'] = 5
+    currentConnections[client.id].pos['rotate'] = 0
+    currentConnections[client.id].pos['attacc'] = 0
     currentConnections[client.id].data = {}
     currentConnections[client.id].data.hostname = "Unknown_" + clientIndex++
     currentConnections[client.id].data.clientid = client.id
@@ -50,6 +52,15 @@ io.sockets.on('connection', function(client){
                 break
             case 'right':
                 currentConnections[client.id].pos['x'] += 1
+                break
+            case 'rotate':
+                currentConnections[client.id].pos['rotate'] = currentConnections[client.id].pos['rotate'] ? 0 : 1
+                break
+            case 'hold':
+                currentConnections[client.id].pos['attacc'] = 1
+                break
+            case 'release':
+                currentConnections[client.id].pos['attacc'] = 0
                 break
             default:
                 break

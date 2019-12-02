@@ -3,9 +3,20 @@ $(function () {
     var c = document.getElementById("myCanvas");
     var ctx = c.getContext("2d");
     var socket = io()
+    // character sprite
     var scratchcatsrc = 'img/scratch-cat.png'
+    var scratchcatcutsrc = 'img/scratch-cat-cut.png'
     var character = new Image()
+    var charactercut = new Image()
     character.src = scratchcatsrc
+    charactercut.src = scratchcatcutsrc
+    // reversed:
+    var scratchcatsrcrev = 'img/scratch-cat-rev.png'
+    var scratchcatcutsrcrev = 'img/scratch-cat-cut-rev.png'
+    var characterrev = new Image()
+    var charactercutrev = new Image()
+    characterrev.src = scratchcatsrcrev
+    charactercutrev.src = scratchcatcutsrcrev
     
     ctx.fillStyle = "black";
     ctx.font = "bold 16px Arial";
@@ -37,7 +48,20 @@ $(function () {
         ctx.clearRect(0, 0, c.width, c.height)
         for (client in currentConnections){
             let cl = currentConnections[client]
-            ctx.drawImage(character, cl.pos['x']*5, -cl.pos['y']*5, 150, 150)
+            if (cl.pos['attacc']){
+                if (cl.pos['rotate']){
+                    pic = charactercutrev
+                } else {
+                    pic = charactercut
+                }
+            } else {
+                if (cl.pos['rotate']){
+                    pic = characterrev
+                } else {
+                    pic = character
+                }
+            }
+            ctx.drawImage(pic, cl.pos['x']*5, -cl.pos['y']*5, 150, 150)
             ctx.fillText(cl.data.hostname, cl.pos['x']*5+ 30 - (cl.data.hostname.length - 6)*5, -cl.pos['y']*5 - 5, 150, 150)
         }
     }
@@ -56,8 +80,23 @@ $(function () {
             case 100:
                 socket.emit('move', 'right')
                 break
+            case 113:
+                socket.emit('move', 'rotate')
+                break
             default:
                 break
+        }
+    })
+
+    $(document).keydown(function(event){
+        if (event.keyCode == 69){
+            socket.emit('move', 'hold')
+        }
+    })
+
+    $(document).keyup(function(event){
+        if (event.keyCode == 69){
+            socket.emit('move', 'release')
         }
     })
 })
