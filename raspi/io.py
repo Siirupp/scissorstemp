@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import sys
 import subprocess
 import pifacedigitalio as p
@@ -24,7 +25,9 @@ def getPiData():
   
   return data
 
+get_host_name_IP() # To wait for network
 sio = socketio.Client()
+
 
 @sio.event
 def connect():
@@ -45,7 +48,7 @@ led = 0
 def hitted():
     global led
     led = led + 1
-    if led >= 256:
+    if led >= 255:
         led = 0
     print("you got hit")
     subprocess.call(["/home/pi/remote-debugging/lab3", str(led)], stdin = sys.stdin)
