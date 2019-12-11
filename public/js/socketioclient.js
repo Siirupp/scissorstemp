@@ -44,6 +44,21 @@ $(function () {
         reloadPos(currentConnections)
     })
 
+    var hit_in_progress = 0
+
+    socket.on('hitted', function(){
+        if(!hit_in_progress){
+            hit_in_progress = 1
+            $("#myCanvas").css("background-color", "pink");
+            setTimeout(function () {
+                $("#myCanvas").css("background-color", "");
+            }, 20)
+            setTimeout(function(){
+                hit_in_progress = 0
+            }, 300)
+        }
+    })
+
     function reloadPos(currentConnections){
         ctx.clearRect(0, 0, c.width, c.height)
         for (client in currentConnections){
@@ -61,8 +76,8 @@ $(function () {
                     pic = character
                 }
             }
-            ctx.drawImage(pic, cl.pos['x']*5, -cl.pos['y']*5, 150, 150)
-            ctx.fillText(cl.data.hostname, cl.pos['x']*5+ 30 - (cl.data.hostname.length - 6)*5, -cl.pos['y']*5 - 5, 150, 150)
+            ctx.drawImage(pic, cl.pos['x'], -cl.pos['y'], 150, 150)
+            ctx.fillText(cl.data.hostname, cl.pos['x']+ 30 - (cl.data.hostname.length - 6), -cl.pos['y'] - 5, 150, 150)
         }
     }
 
